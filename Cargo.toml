@@ -10,6 +10,7 @@ path = "src/lib.rs"
 path = "src/main.rs"
 name = "wurdle"
 [dependencies]
+colored = "2.1.0"
 rand = "0.8.5"
 
 [dev-dependencies]

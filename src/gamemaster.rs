@@ -7,7 +7,7 @@ pub enum Guess {
 }
 
 pub struct GameMaster {
-    solution: [char; 5],
+    pub solution: [char; 5],
 }
 
 impl GameMaster {
