@@ -77,7 +77,6 @@ impl Player {
             .iter()
             .filter(|x| x.contains(&most_decisive_char))
             .collect();
-        dbg!(most_decisive_char);
         **pruned_options
             .choose(&mut rand::thread_rng())
             .expect("No possible anwers?")

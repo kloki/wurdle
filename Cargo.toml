@@ -13,6 +13,11 @@ name = "wurdle"
 [[bin]]
 path = "src/benchmark.rs"
 name = "wurdle-benchmark"
+
+[[bin]]
+path = "src/horror.rs"
+name = "wurdle-horror"
+
 [dependencies]
 colored = "2.1.0"
 rand = "0.8.5"
