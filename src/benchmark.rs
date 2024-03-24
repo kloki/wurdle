@@ -7,7 +7,7 @@ fn print_results(name: &str, results: Vec<usize>) {
     let min = results.iter().min().unwrap();
     let max = results.iter().max().unwrap();
     let avg = results.iter().sum::<usize>() as f64 / RUNS as f64;
-    let win = results.iter().filter(|x| *x < &7).map(|_| 1).sum::<usize>() as f64 / RUNS as f64;
+    let win = results.iter().filter(|x| *x < &7).count() as f64 / RUNS as f64;
     println!(
         "{: >15}|{: >8}|{: >8}|{: >8}|{: >8}",
         name, avg, max, min, win
