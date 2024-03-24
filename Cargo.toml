@@ -12,6 +12,7 @@ name = "wurdle"
 [dependencies]
 colored = "2.1.0"
 rand = "0.8.5"
+rayon = "1.10.0"
 
 [dev-dependencies]
 tempdir = "0.3.7"

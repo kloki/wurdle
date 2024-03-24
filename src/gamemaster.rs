@@ -19,6 +19,10 @@ impl GameMaster {
         }
     }
 
+    pub fn with_solution(solution: [char; 5]) -> Self {
+        Self { solution }
+    }
+
     pub fn guess(&self, guess: &[char; 5]) -> [Guess; 5] {
         let mut answer = [Guess::Wrong('a'); 5];
         let mut used_for_wrong_pos = [false; 5];
