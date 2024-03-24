@@ -40,4 +40,15 @@ fn main() {
         })
         .collect();
     print_results("Vowel prune", results);
+
+    let results: Vec<usize> = (0..RUNS)
+        .into_par_iter()
+        .map(|_| {
+            let solution = data
+                .choose(&mut rand::thread_rng())
+                .expect("Cannot get solution");
+            run(data.clone(), *solution, Strategy::SplitStrategy)
+        })
+        .collect();
+    print_results("Split", results);
 }

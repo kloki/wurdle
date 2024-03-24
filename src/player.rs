@@ -3,10 +3,16 @@ use std::collections::HashMap;
 use rand::seq::SliceRandom;
 
 use crate::gamemaster::Guess;
+
+const ASCII: [char; 26] = [
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
+    't', 'u', 'v', 'w', 'x', 'y', 'z',
+];
 pub enum Strategy {
     Random,
     VowelPrune,
     Deterministic,
+    SplitStrategy,
 }
 pub struct Player {
     pub options: Vec<[char; 5]>,
@@ -37,7 +43,44 @@ impl Player {
                     .choose(&mut rand::thread_rng())
                     .expect("No possible anwers?")
             }
+            Strategy::SplitStrategy => self.split_strategy(),
         }
+    }
+
+    fn split_strategy(&self) -> [char; 5] {
+        if self.options.len() < 4 {
+            return *self
+                .options
+                .choose(&mut rand::thread_rng())
+                .expect("No possible anwers?");
+        }
+
+        let mut results: Vec<(char, isize)> = ASCII
+            .iter()
+            .map(|c| {
+                let mut count: isize = 0;
+                for o in &self.options {
+                    if o.contains(c) {
+                        count += 1;
+                    }
+                }
+                let decisive_factor = (count - ((self.options.len() / 2) as isize)).abs();
+
+                (*c, decisive_factor)
+            })
+            .collect();
+
+        results.sort_unstable_by_key(|x| x.1);
+        let most_decisive_char = results[0].0;
+        let pruned_options: Vec<_> = self
+            .options
+            .iter()
+            .filter(|x| x.contains(&most_decisive_char))
+            .collect();
+        dbg!(most_decisive_char);
+        **pruned_options
+            .choose(&mut rand::thread_rng())
+            .expect("No possible anwers?")
     }
 
     pub fn prune(&mut self, guesses: [Guess; 5]) {
