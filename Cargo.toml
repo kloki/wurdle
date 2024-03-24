@@ -2,13 +2,17 @@
 name = "wurdle"
 version = "0.1.0"
 edition = "2021"
-
+default-run = "wurdle"
 [lib]
 path = "src/lib.rs"
 
 [[bin]]
 path = "src/main.rs"
 name = "wurdle"
+
+[[bin]]
+path = "src/benchmark.rs"
+name = "wurdle-benchmark"
 [dependencies]
 colored = "2.1.0"
 rand = "0.8.5"
