@@ -7,7 +7,10 @@ use wurdle::{
 fn main() {
     let data = import_file("./data/words.txt").expect("failed to import words");
     let gm = GameMaster::new(&data);
-    let mut p = Player::new(data, wurdle::player::Strategy::SplitStrategy);
+    let mut p = Player::new(
+        data,
+        wurdle::player::Strategy::CachedEntropy(['t', 'a', 'r', 'e', 's']),
+    );
     let mut guesses = 0;
 
     println!("Starting");
@@ -22,5 +25,9 @@ fn main() {
 
         p.prune(result)
     }
-    println!("\n🎉 \nFound result in {} guesses", guesses);
+    if guesses > 6 {
+        println!("\n😠 \nFound result in {} guesses", guesses);
+    } else {
+        println!("\n🎉 \nFound result in {} guesses", guesses);
+    }
 }
