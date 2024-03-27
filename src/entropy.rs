@@ -44,7 +44,7 @@ pub fn best_guess(options: &Vec<[char; 5]>) -> [char; 5] {
 pub fn find_entropies(options: &Vec<[char; 5]>) -> Vec<([char; 5], f64)> {
     let mut results: Vec<([char; 5], f64)> = options
         .par_iter()
-        .map(|x| (*x, find_entropy(*x, &options)))
+        .map(|x| (*x, find_entropy(*x, options)))
         .collect();
     results.sort_by(|a, b| a.1.partial_cmp(&b.1).expect("Dont worry about Nan"));
     results
