@@ -37,9 +37,6 @@ impl From<[Feedback; 5]> for FeedbackMask {
 }
 
 pub fn best_guess(options: &Vec<[char; 5]>) -> [char; 5] {
-    if options.len() > 10000 {
-        return ['t', 'a', 'r', 'e', 's'];
-    }
     let results = find_entropies(options);
     results.last().expect("results should not be empty").0
 }
@@ -69,4 +66,29 @@ pub fn find_entropy(word: [char; 5], options: &Vec<[char; 5]>) -> f64 {
             p * (1. / p).log2()
         })
         .sum()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_sanity_check_1() {
+        let result = find_entropies(&vec![['a', 'a', 'a', 'a', 'a'], ['a', 'a', 'b', 'a', 'a']]);
+        assert_eq!(result[0].1, 1.0);
+        assert_eq!(result[1].1, 1.0);
+    }
+
+    #[test]
+    fn test_sanity_check_2() {
+        let result = find_entropies(&vec![
+            ['a', 'a', 'a', 'a', 'a'],
+            ['a', 'a', 'b', 'a', 'a'],
+            ['z', 'z', 'z', 'z', 'z'],
+        ]);
+        dbg![&result];
+        assert!(result[0].1 < result[1].1);
+        assert!(result[0].1 < result[2].1);
+        assert_eq!(result[1].1, result[2].1);
+    }
 }
