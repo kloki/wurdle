@@ -1,16 +1,16 @@
 use colored::Colorize;
 
-use crate::gamemaster::Guess;
-pub fn validate_answer(result: &[Guess; 5]) -> bool {
-    result.iter().all(|x| matches!(x, Guess::Correct(_)))
+use crate::gamemaster::Feedback;
+pub fn validate_answer(result: &[Feedback; 5]) -> bool {
+    result.iter().all(|x| matches!(x, Feedback::Correct(_)))
 }
 
-pub fn print_answer(result: &[Guess; 5]) {
+pub fn print_answer(result: &[Feedback; 5]) {
     for i in result.iter() {
         match i {
-            Guess::Correct(c) => print!("{}", c.to_string().green()),
-            Guess::WrongPosition(c) => print!("{}", c.to_string().yellow()),
-            Guess::Wrong(c) => print!("{}", c),
+            Feedback::Correct(c) => print!("{}", c.to_string().green()),
+            Feedback::WrongPosition(c) => print!("{}", c.to_string().yellow()),
+            Feedback::Wrong(c) => print!("{}", c),
         }
     }
     println!(" ");

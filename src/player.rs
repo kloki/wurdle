@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use rand::seq::SliceRandom;
 
-use crate::gamemaster::Guess;
+use crate::gamemaster::Feedback;
 
 const ASCII: [char; 26] = [
     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
@@ -13,6 +13,7 @@ pub enum Strategy {
     VowelPrune,
     Deterministic,
     SplitStrategy,
+    Entropy,
 }
 pub struct Player {
     pub options: Vec<[char; 5]>,
@@ -44,6 +45,7 @@ impl Player {
                     .expect("No possible anwers?")
             }
             Strategy::SplitStrategy => self.split_strategy(),
+            Strategy::Entropy => self.split_strategy(),
         }
     }
 
@@ -82,7 +84,7 @@ impl Player {
             .expect("No possible anwers?")
     }
 
-    pub fn prune(&mut self, guesses: [Guess; 5]) {
+    pub fn prune(&mut self, guesses: [Feedback; 5]) {
         // These character should be in this posistion or not
         let mut correct_chars: Vec<(char, usize)> = Vec::new();
         let mut excluded_chars: Vec<(char, usize)> = Vec::new();
@@ -98,18 +100,18 @@ impl Player {
 
         for (i, guess) in guesses.iter().enumerate() {
             match guess {
-                Guess::Correct(c) => {
+                Feedback::Correct(c) => {
                     correct_chars.push((*c, i));
                     let char_count = counts.get(c).unwrap_or(&0);
                     counts.insert(*c, char_count + 1);
                 }
-                Guess::WrongPosition(c) => {
+                Feedback::WrongPosition(c) => {
                     excluded_chars.push((*c, i));
                     exclude_mask.push(i);
                     let char_count = counts.get(c).unwrap_or(&0);
                     counts.insert(*c, char_count + 1);
                 }
-                Guess::Wrong(c) => {
+                Feedback::Wrong(c) => {
                     excluded_chars.push((*c, i));
                     excluded_chars_infered.push(*c);
                     exclude_mask.push(i)
@@ -166,11 +168,11 @@ mod tests {
             Strategy::Deterministic,
         );
         player.prune([
-            Guess::Correct('a'),
-            Guess::Wrong('x'),
-            Guess::Wrong('x'),
-            Guess::Wrong('x'),
-            Guess::Wrong('x'),
+            Feedback::Correct('a'),
+            Feedback::Wrong('x'),
+            Feedback::Wrong('x'),
+            Feedback::Wrong('x'),
+            Feedback::Wrong('x'),
         ]);
         assert_eq!(player.options.len(), 1)
     }
@@ -181,11 +183,11 @@ mod tests {
             Strategy::Deterministic,
         );
         player.prune([
-            Guess::Correct('a'),
-            Guess::Wrong('x'),
-            Guess::Wrong('x'),
-            Guess::Wrong('x'),
-            Guess::Wrong('x'),
+            Feedback::Correct('a'),
+            Feedback::Wrong('x'),
+            Feedback::Wrong('x'),
+            Feedback::Wrong('x'),
+            Feedback::Wrong('x'),
         ]);
         assert_eq!(player.options.len(), 1)
     }
@@ -196,11 +198,11 @@ mod tests {
             Strategy::Deterministic,
         );
         player.prune([
-            Guess::Correct('a'),
-            Guess::WrongPosition('a'),
-            Guess::Wrong('x'),
-            Guess::Wrong('x'),
-            Guess::Wrong('x'),
+            Feedback::Correct('a'),
+            Feedback::WrongPosition('a'),
+            Feedback::Wrong('x'),
+            Feedback::Wrong('x'),
+            Feedback::Wrong('x'),
         ]);
         assert_eq!(player.options.len(), 1)
     }
@@ -216,11 +218,11 @@ mod tests {
             Strategy::Deterministic,
         );
         player.prune([
-            Guess::Correct('b'),
-            Guess::WrongPosition('a'),
-            Guess::Wrong('a'),
-            Guess::Wrong('x'),
-            Guess::Wrong('x'),
+            Feedback::Correct('b'),
+            Feedback::WrongPosition('a'),
+            Feedback::Wrong('a'),
+            Feedback::Wrong('x'),
+            Feedback::Wrong('x'),
         ]);
         assert_eq!(player.options.len(), 1)
     }
