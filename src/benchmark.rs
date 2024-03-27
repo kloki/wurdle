@@ -52,13 +52,14 @@ fn main() {
         .collect();
     print_results("Split", results);
 
+    let cached_entropy = Strategy::prepare_entropy(&data);
     let results: Vec<usize> = (0..RUNS)
         .into_par_iter()
         .map(|_| {
             let solution = data
                 .choose(&mut rand::thread_rng())
                 .expect("Cannot get solution");
-            run(data.clone(), *solution, Strategy::Entropy)
+            run(data.clone(), *solution, cached_entropy)
         })
         .collect();
     print_results("Entropy", results);

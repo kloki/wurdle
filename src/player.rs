@@ -2,18 +2,26 @@ use std::collections::HashMap;
 
 use rand::seq::SliceRandom;
 
-use crate::gamemaster::Feedback;
+use crate::{entropy::best_guess, gamemaster::Feedback};
 
 const ASCII: [char; 26] = [
     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
     't', 'u', 'v', 'w', 'x', 'y', 'z',
 ];
+#[derive(Copy, Clone)]
 pub enum Strategy {
     Random,
     VowelPrune,
     Deterministic,
     SplitStrategy,
     Entropy,
+    CachedEntropy([char; 5]),
+}
+
+impl Strategy {
+    pub fn prepare_entropy(options: &Vec<[char; 5]>) -> Self {
+        Strategy::CachedEntropy(best_guess(options))
+    }
 }
 pub struct Player {
     pub options: Vec<[char; 5]>,
@@ -45,7 +53,14 @@ impl Player {
                     .expect("No possible anwers?")
             }
             Strategy::SplitStrategy => self.split_strategy(),
-            Strategy::Entropy => self.split_strategy(),
+            Strategy::Entropy => best_guess(&self.options),
+            Strategy::CachedEntropy(first_answer) => {
+                if self.options.contains(&first_answer) {
+                    first_answer
+                } else {
+                    best_guess(&self.options)
+                }
+            }
         }
     }
 

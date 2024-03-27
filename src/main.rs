@@ -7,7 +7,7 @@ use wurdle::{
 fn main() {
     let data = import_file("./data/words.txt").expect("failed to import words");
     let gm = GameMaster::new(&data);
-    let mut p = Player::new(data, wurdle::player::Strategy::SplitStrategy);
+    let mut p = Player::new(data, wurdle::player::Strategy::Entropy);
     let mut guesses = 0;
 
     println!("Starting");

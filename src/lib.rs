@@ -3,6 +3,7 @@ use crate::{
     player::{Player, Strategy},
     utils::validate_answer,
 };
+pub mod entropy;
 pub mod gamemaster;
 pub mod importer;
 pub mod player;

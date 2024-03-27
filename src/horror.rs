@@ -51,4 +51,11 @@ fn main() {
         .map(|_| run(data.clone(), solution, Strategy::SplitStrategy))
         .collect();
     print_results("Split", results);
+
+    let cached_entropy = Strategy::prepare_entropy(&data);
+    let results: Vec<usize> = (0..RUNS)
+        .into_par_iter()
+        .map(|_| run(data.clone(), solution, cached_entropy))
+        .collect();
+    print_results("Entropy", results);
 }
