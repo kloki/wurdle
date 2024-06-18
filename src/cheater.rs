@@ -1,5 +1,11 @@
 use colored::Colorize;
-use wurdle::{gamemaster::Feedback, importer::import_file, player::Player, utils::print_emoji};
+use wurdle::{
+    gamemaster::{Feedback, FeedbackType},
+    importer::import_file,
+    player::Player,
+    utils::print_emoji,
+    Word,
+};
 
 pub fn get_use_input() -> String {
     let mut input = String::new();
@@ -9,22 +15,22 @@ pub fn get_use_input() -> String {
     input.trim().to_string()
 }
 
-pub fn get_feedback(guess: [char; 5]) -> [Feedback; 5] {
+pub fn get_feedback(guess: Word) -> Feedback {
     println!("Enter feedback('_/y/g'): ");
     let raw = get_use_input().chars().collect::<Vec<char>>();
     if raw.len() != 5 {
-        println!("Feedback must be 5 characters long");
+        println!("FeedbackType must be 5 characters long");
         return get_feedback(guess);
     }
     guess
         .iter()
         .enumerate()
         .map(|(i, c)| match raw[i] {
-            'g' => Feedback::Correct(*c),
-            'y' => Feedback::WrongPosition(*c),
-            _ => Feedback::Wrong(*c),
+            'g' => FeedbackType::Correct(*c),
+            'y' => FeedbackType::WrongPosition(*c),
+            _ => FeedbackType::Wrong(*c),
         })
-        .collect::<Vec<Feedback>>()
+        .collect::<Vec<FeedbackType>>()
         .try_into()
         .expect("invalid feedback")
 }

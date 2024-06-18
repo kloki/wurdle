@@ -2,7 +2,10 @@ use std::collections::HashMap;
 
 use rayon::prelude::*;
 
-use crate::gamemaster::{Feedback, GameMaster};
+use crate::{
+    gamemaster::{FeedbackType, GameMaster},
+    Word,
+};
 
 #[derive(Hash, Eq, PartialEq)]
 pub enum FB {
@@ -11,22 +14,22 @@ pub enum FB {
     W,
 }
 
-impl From<Feedback> for FB {
-    fn from(value: Feedback) -> Self {
+impl From<FeedbackType> for FB {
+    fn from(value: FeedbackType) -> Self {
         match value {
-            Feedback::Correct(_) => FB::C,
-            Feedback::WrongPosition(_) => FB::WP,
-            Feedback::Wrong(_) => FB::W,
+            FeedbackType::Correct(_) => FB::C,
+            FeedbackType::WrongPosition(_) => FB::WP,
+            FeedbackType::Wrong(_) => FB::W,
         }
     }
 }
 
 #[derive(Hash, Eq, PartialEq)]
-pub struct FeedbackMask([FB; 5]);
+pub struct FeedbackTypeMask([FB; 5]);
 
-impl From<[Feedback; 5]> for FeedbackMask {
-    fn from(value: [Feedback; 5]) -> Self {
-        FeedbackMask([
+impl From<[FeedbackType; 5]> for FeedbackTypeMask {
+    fn from(value: [FeedbackType; 5]) -> Self {
+        FeedbackTypeMask([
             value[0].into(),
             value[1].into(),
             value[2].into(),
@@ -36,15 +39,15 @@ impl From<[Feedback; 5]> for FeedbackMask {
     }
 }
 
-pub fn best_guess(options: &Vec<[char; 5]>, valid: &Vec<[char; 5]>) -> [char; 5] {
+pub fn best_guess(options: &Vec<Word>, valid: &Vec<Word>) -> Word {
     let results = find_entropies(options, valid);
     results.last().expect("results should not be empty").0
 }
 
-pub fn find_entropies(options: &Vec<[char; 5]>, valid: &Vec<[char; 5]>) -> Vec<([char; 5], f64)> {
+pub fn find_entropies(options: &Vec<Word>, valid: &Vec<Word>) -> Vec<(Word, f64)> {
     //Although we consider putting in words we are now ar wrong.
     //If they have a higher entropy that are worth considering
-    let mut results: Vec<([char; 5], f64)> = valid
+    let mut results: Vec<(Word, f64)> = valid
         .par_iter()
         .map(|x| (*x, find_entropy(*x, options)))
         .collect();
@@ -52,12 +55,12 @@ pub fn find_entropies(options: &Vec<[char; 5]>, valid: &Vec<[char; 5]>) -> Vec<(
     results
 }
 
-pub fn find_entropy(word: [char; 5], options: &Vec<[char; 5]>) -> f64 {
-    let mut feedback_count: HashMap<FeedbackMask, usize> = HashMap::new();
+pub fn find_entropy(word: Word, options: &Vec<Word>) -> f64 {
+    let mut feedback_count: HashMap<FeedbackTypeMask, usize> = HashMap::new();
     let size: f64 = options.len() as f64;
     for o in options {
         let gm = GameMaster::with_solution(*o);
-        let fb: FeedbackMask = gm.guess(&word).into();
+        let fb: FeedbackTypeMask = gm.guess(&word).into();
         let count = feedback_count.get(&fb).unwrap_or(&0);
         feedback_count.insert(fb, count + 1);
     }

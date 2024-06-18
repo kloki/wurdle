@@ -1,9 +1,9 @@
 use rand::seq::SliceRandom;
 use rayon::prelude::*;
-use wurdle::{importer::import_file, player::Strategy, run, Score};
+use wurdle::{importer::import_file, player::Strategy, run, Game};
 const RUNS: usize = 100;
 
-fn print_results(name: &str, results: Vec<Score>) {
+fn print_results(name: &str, results: Vec<Game>) {
     let win = results.iter().filter(|x| x.won()).count() as f64 / RUNS as f64;
     println!("{: >15}|{: >12}", name, win)
 }
@@ -13,7 +13,7 @@ fn main() {
 
     println!("           Name|     Winrate");
     println!("----------------------------");
-    let results: Vec<Score> = (0..RUNS)
+    let results: Vec<Game> = (0..RUNS)
         .into_par_iter()
         .map(|_| {
             let solution = data
@@ -24,7 +24,7 @@ fn main() {
         .collect();
     print_results("Random", results);
 
-    let results: Vec<Score> = (0..RUNS)
+    let results: Vec<Game> = (0..RUNS)
         .into_par_iter()
         .map(|_| {
             let solution = data
@@ -35,7 +35,7 @@ fn main() {
         .collect();
     print_results("Vowel prune", results);
 
-    let results: Vec<Score> = (0..RUNS)
+    let results: Vec<Game> = (0..RUNS)
         .into_par_iter()
         .map(|_| {
             let solution = data
@@ -47,7 +47,7 @@ fn main() {
     print_results("Split", results);
 
     let cached_entropy = Strategy::prepare_entropy(&data);
-    let results: Vec<Score> = (0..RUNS)
+    let results: Vec<Game> = (0..RUNS)
         .into_par_iter()
         .map(|_| {
             let solution = data

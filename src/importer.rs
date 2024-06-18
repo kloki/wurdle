@@ -3,7 +3,9 @@ use std::{
     io::{BufRead, BufReader},
 };
 
-pub fn import_file(path: &str) -> std::io::Result<Vec<[char; 5]>> {
+use crate::Word;
+
+pub fn import_file(path: &str) -> std::io::Result<Vec<Word>> {
     let file = File::open(path)?;
     let reader = BufReader::new(file);
     let mut data = Vec::new();
@@ -13,7 +15,7 @@ pub fn import_file(path: &str) -> std::io::Result<Vec<[char; 5]>> {
         if line.is_empty() {
             continue;
         }
-        let value: [char; 5] = line
+        let value: Word = line
             .chars()
             .collect::<Vec<_>>()
             .try_into()

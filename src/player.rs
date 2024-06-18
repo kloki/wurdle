@@ -2,7 +2,11 @@ use std::collections::HashMap;
 
 use rand::seq::SliceRandom;
 
-use crate::{entropy::best_guess, gamemaster::Feedback};
+use crate::{
+    entropy::best_guess,
+    gamemaster::{Feedback, FeedbackType},
+    Word,
+};
 
 const ASCII: [char; 26] = [
     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
@@ -15,22 +19,22 @@ pub enum Strategy {
     Deterministic,
     SplitStrategy,
     Entropy,
-    CachedEntropy([char; 5]),
+    CachedEntropy(Word),
 }
 
 impl Strategy {
-    pub fn prepare_entropy(options: &Vec<[char; 5]>) -> Self {
+    pub fn prepare_entropy(options: &Vec<Word>) -> Self {
         Strategy::CachedEntropy(best_guess(options, options))
     }
 }
 pub struct Player {
-    pub options: Vec<[char; 5]>,
-    pub valid: Vec<[char; 5]>,
+    pub options: Vec<Word>,
+    pub valid: Vec<Word>,
     pub strategy: Strategy,
 }
 
 impl Player {
-    pub fn new(data_set: Vec<[char; 5]>, strategy: Strategy) -> Self {
+    pub fn new(data_set: Vec<Word>, strategy: Strategy) -> Self {
         Self {
             options: data_set.clone(),
             valid: data_set,
@@ -38,7 +42,7 @@ impl Player {
         }
     }
 
-    pub fn guess(&self, last_round: bool) -> [char; 5] {
+    pub fn guess(&self, last_round: bool) -> Word {
         if last_round {
             return *self
                 .options
@@ -75,7 +79,7 @@ impl Player {
         }
     }
 
-    fn split_strategy(&self) -> [char; 5] {
+    fn split_strategy(&self) -> Word {
         if self.options.len() < 4 {
             return *self
                 .options
@@ -110,7 +114,7 @@ impl Player {
             .expect("No possible anwers?")
     }
 
-    pub fn prune(&mut self, guesses: [Feedback; 5]) {
+    pub fn prune(&mut self, feedback: Feedback) {
         // These character should be in this posistion or not
         let mut correct_chars: Vec<(char, usize)> = Vec::new();
         let mut excluded_chars: Vec<(char, usize)> = Vec::new();
@@ -124,20 +128,20 @@ impl Player {
         // same type in the answer
         let mut counts: HashMap<char, usize> = HashMap::with_capacity(5);
 
-        for (i, guess) in guesses.iter().enumerate() {
+        for (i, guess) in feedback.iter().enumerate() {
             match guess {
-                Feedback::Correct(c) => {
+                FeedbackType::Correct(c) => {
                     correct_chars.push((*c, i));
                     let char_count = counts.get(c).unwrap_or(&0);
                     counts.insert(*c, char_count + 1);
                 }
-                Feedback::WrongPosition(c) => {
+                FeedbackType::WrongPosition(c) => {
                     excluded_chars.push((*c, i));
                     exclude_mask.push(i);
                     let char_count = counts.get(c).unwrap_or(&0);
                     counts.insert(*c, char_count + 1);
                 }
-                Feedback::Wrong(c) => {
+                FeedbackType::Wrong(c) => {
                     excluded_chars.push((*c, i));
                     excluded_chars_infered.push(*c);
                     exclude_mask.push(i)
@@ -194,11 +198,11 @@ mod tests {
             Strategy::Deterministic,
         );
         player.prune([
-            Feedback::Correct('a'),
-            Feedback::Wrong('x'),
-            Feedback::Wrong('x'),
-            Feedback::Wrong('x'),
-            Feedback::Wrong('x'),
+            FeedbackType::Correct('a'),
+            FeedbackType::Wrong('x'),
+            FeedbackType::Wrong('x'),
+            FeedbackType::Wrong('x'),
+            FeedbackType::Wrong('x'),
         ]);
         assert_eq!(player.options.len(), 1)
     }
@@ -209,11 +213,11 @@ mod tests {
             Strategy::Deterministic,
         );
         player.prune([
-            Feedback::Correct('a'),
-            Feedback::Wrong('x'),
-            Feedback::Wrong('x'),
-            Feedback::Wrong('x'),
-            Feedback::Wrong('x'),
+            FeedbackType::Correct('a'),
+            FeedbackType::Wrong('x'),
+            FeedbackType::Wrong('x'),
+            FeedbackType::Wrong('x'),
+            FeedbackType::Wrong('x'),
         ]);
         assert_eq!(player.options.len(), 1)
     }
@@ -224,11 +228,11 @@ mod tests {
             Strategy::Deterministic,
         );
         player.prune([
-            Feedback::Correct('a'),
-            Feedback::WrongPosition('a'),
-            Feedback::Wrong('x'),
-            Feedback::Wrong('x'),
-            Feedback::Wrong('x'),
+            FeedbackType::Correct('a'),
+            FeedbackType::WrongPosition('a'),
+            FeedbackType::Wrong('x'),
+            FeedbackType::Wrong('x'),
+            FeedbackType::Wrong('x'),
         ]);
         assert_eq!(player.options.len(), 1)
     }
@@ -244,11 +248,11 @@ mod tests {
             Strategy::Deterministic,
         );
         player.prune([
-            Feedback::Correct('b'),
-            Feedback::WrongPosition('a'),
-            Feedback::Wrong('a'),
-            Feedback::Wrong('x'),
-            Feedback::Wrong('x'),
+            FeedbackType::Correct('b'),
+            FeedbackType::WrongPosition('a'),
+            FeedbackType::Wrong('a'),
+            FeedbackType::Wrong('x'),
+            FeedbackType::Wrong('x'),
         ]);
         assert_eq!(player.options.len(), 1)
     }

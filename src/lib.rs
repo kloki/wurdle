@@ -1,5 +1,5 @@
 use crate::{
-    gamemaster::GameMaster,
+    gamemaster::{Feedback, GameMaster},
     player::{Player, Strategy},
     utils::validate_answer,
 };
@@ -9,30 +9,41 @@ pub mod importer;
 pub mod player;
 pub mod utils;
 
-pub enum Score {
-    Success(usize),
-    Fail,
+#[derive(Debug)]
+pub struct Game {
+    guesses: Vec<Feedback>,
+    won: bool,
 }
 
-impl Score {
+pub type Word = [char; 5];
+
+impl Game {
     pub fn won(&self) -> bool {
-        match self {
-            Score::Success(_) => true,
-            Score::Fail => false,
-        }
+        self.won
+    }
+    pub fn number_of_guesses(&self) -> usize {
+        self.guesses.len()
     }
 }
 
-pub fn run(data: Vec<[char; 5]>, solution: [char; 5], strategy: Strategy, guesses: usize) -> Score {
+pub fn run(data: Vec<Word>, solution: Word, strategy: Strategy, guesses: usize) -> Game {
     let gm = GameMaster::with_solution(solution);
     let mut p = Player::new(data, strategy);
+    let mut results: Vec<Feedback> = vec![];
     for i in 0..guesses {
         let result = gm.guess(&p.guess(i == guesses - 1));
+        results.push(result);
         if validate_answer(&result) {
-            return Score::Success(i + 1);
+            return Game {
+                guesses: results,
+                won: true,
+            };
         }
 
         p.prune(result)
     }
-    Score::Fail
+    Game {
+        guesses: results,
+        won: false,
+    }
 }
