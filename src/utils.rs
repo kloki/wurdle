@@ -1,11 +1,11 @@
 use colored::Colorize;
 
-use crate::gamemaster::FeedbackType;
-pub fn validate_answer(result: &[FeedbackType; 5]) -> bool {
+use crate::gamemaster::{Feedback, FeedbackType};
+pub fn validate_answer(result: &Feedback) -> bool {
     result.iter().all(|x| matches!(x, FeedbackType::Correct(_)))
 }
 
-pub fn print_answer(result: &[FeedbackType; 5]) {
+pub fn print_answer(result: &Feedback) {
     for i in result.iter() {
         match i {
             FeedbackType::Correct(c) => print!("{}", c.to_string().green()),
@@ -16,7 +16,8 @@ pub fn print_answer(result: &[FeedbackType; 5]) {
     println!(" ");
 }
 
-pub fn print_emoji(result: &[FeedbackType; 5]) {
+pub fn print_emoji(result: &Feedback) {
+    print!("          ");
     for i in result.iter() {
         match i {
             FeedbackType::Correct(_) => print!("🟩",),

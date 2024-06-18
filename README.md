@@ -1,12 +1,21 @@
 # wurdle
 
-## Run one simulation
+Solve wordle using entropy approach.
+
+Found "fried" in 4 guesses
+
+          ⬜⬜🟨🟩⬜
+          ⬜⬜🟩⬜🟩
+          🟨⬜⬜🟨🟨
+          🟩🟩🟩🟩🟩
+
+## Solve a specific word
 
 ```
 cargo run --release <input>
 ```
 
-## Benchmark different strategies
+## Compare entropy with naive solutions
 
 ```
 cargo run --bin wurdle-benchmark --release
@@ -29,8 +38,25 @@ cargo run --bin wurdle-horror --release
 
 ## Cheater assistant
 
+Solve the daily wordle.
+
 ```
 cargo run --bin wurdle-cheater --release
+```
+
+## Opener
+
+Given a data set, the opener is always the same. Therefore I hardcode the opener everywhere
+This one recalculates it.
+
+```
+cargo run --bin wurdle-cheater --release
+```
+
+## Endless
+
+```
+cargo run --bin wurdle-loop --release
 ```
 
 ## References

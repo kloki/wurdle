@@ -11,7 +11,7 @@ pub mod utils;
 
 #[derive(Debug)]
 pub struct Game {
-    guesses: Vec<Feedback>,
+    pub guesses: Vec<Feedback>,
     won: bool,
 }
 

@@ -46,7 +46,7 @@ fn main() {
         .collect();
     print_results("Split", results);
 
-    let cached_entropy = Strategy::prepare_entropy(&data);
+    let cached_entropy = Strategy::CachedEntropy(['t', 'a', 'r', 'e', 's']);
     let results: Vec<Game> = (0..RUNS)
         .into_par_iter()
         .map(|_| {
