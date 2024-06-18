@@ -17,23 +17,16 @@ fn main() {
         data,
         wurdle::player::Strategy::CachedEntropy(['t', 'a', 'r', 'e', 's']),
     );
-    let mut guesses = 0;
 
     println!("Starting");
     println!("Solution: {}\n", gm.solution.iter().collect::<String>());
-    loop {
-        guesses += 1;
-        let result = gm.guess(&p.guess());
+    for i in 0..6 {
+        let result = gm.guess(&p.guess(i == 5));
         print_answer(&result);
         if validate_answer(&result) {
             break;
         }
 
         p.prune(result)
-    }
-    if guesses > 6 {
-        println!("\n😠 \nFound result in {} guesses", guesses);
-    } else {
-        println!("\n🎉 \nFound result in {} guesses", guesses);
     }
 }

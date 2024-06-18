@@ -37,9 +37,6 @@ impl From<[Feedback; 5]> for FeedbackMask {
 }
 
 pub fn best_guess(options: &Vec<[char; 5]>, valid: &Vec<[char; 5]>) -> [char; 5] {
-    if options.len() == 1 {
-        return options[0];
-    }
     let results = find_entropies(options, valid);
     results.last().expect("results should not be empty").0
 }

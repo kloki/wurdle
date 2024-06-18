@@ -14,14 +14,14 @@ cargo run --bin wurdle-benchmark --release
 
 ### Result
 
-| Name        | Avg    | Max | Min | Winrate |
-| ----------- | ------ | --- | --- | ------- |
-| Random      | 5.1946 | 15  | 2   | 0.8246  |
-| Vowel prune | 5.1834 | 18  | 2   | 0.8204  |
-| Split       | 5.0324 | 15  | 1   | 0.855   |
-| Entropy     | 4.5952 | 13  | 1   | 0.9078  |
+| Name        | Winrate |
+| ----------- | ------- |
+| Random      | 0.8     |
+| Vowel prune | 0.77    |
+| Split       | 0.84    |
+| Entropy     | 0.99    |
 
-## You will lose
+## Entropy Flex
 
 cargo run --bin wurdle-horror --release
 

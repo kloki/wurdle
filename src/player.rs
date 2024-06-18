@@ -38,7 +38,16 @@ impl Player {
         }
     }
 
-    pub fn guess(&self) -> [char; 5] {
+    pub fn guess(&self, last_round: bool) -> [char; 5] {
+        if last_round {
+            return *self
+                .options
+                .choose(&mut rand::thread_rng())
+                .expect("No possible anwers?");
+        }
+        if self.options.len() == 1 {
+            return self.options[0];
+        }
         match self.strategy {
             Strategy::Deterministic => self.options[0],
             Strategy::Random => *self

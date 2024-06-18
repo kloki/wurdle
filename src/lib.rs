@@ -9,18 +9,30 @@ pub mod importer;
 pub mod player;
 pub mod utils;
 
-pub fn run(data: Vec<[char; 5]>, solution: [char; 5], strategy: Strategy) -> usize {
+pub enum Score {
+    Success(usize),
+    Fail,
+}
+
+impl Score {
+    pub fn won(&self) -> bool {
+        match self {
+            Score::Success(_) => true,
+            Score::Fail => false,
+        }
+    }
+}
+
+pub fn run(data: Vec<[char; 5]>, solution: [char; 5], strategy: Strategy, guesses: usize) -> Score {
     let gm = GameMaster::with_solution(solution);
     let mut p = Player::new(data, strategy);
-    let mut guesses = 0;
-    loop {
-        guesses += 1;
-        let result = gm.guess(&p.guess());
+    for i in 0..guesses {
+        let result = gm.guess(&p.guess(i == guesses - 1));
         if validate_answer(&result) {
-            break;
+            return Score::Success(i + 1);
         }
 
         p.prune(result)
     }
-    guesses
+    Score::Fail
 }
