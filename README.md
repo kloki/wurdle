@@ -3,7 +3,7 @@
 ## Run one simulation
 
 ```
-cargo run --release
+cargo run --release <input>
 ```
 
 ## Benchmark different strategies
@@ -23,7 +23,15 @@ cargo run --bin wurdle-benchmark --release
 
 ## Entropy Flex
 
+```
 cargo run --bin wurdle-horror --release
+```
+
+## Cheater assistant
+
+```
+cargo run --bin wurdle-cheater --release
+```
 
 ## References
 

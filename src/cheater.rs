@@ -37,12 +37,25 @@ fn main() {
     );
 
     println!("Wordle Helper\n");
-    loop {
-        let guess = p.guess(false);
-        println!("suggestion: {}\n", guess.iter().collect::<String>().green());
-        let feedback = get_feedback(guess);
-        println!("\n");
-        print_emoji(&feedback);
-        p.prune(feedback);
+    for i in 0..6 {
+        let guess = p.guess(i == 5);
+        if p.options.len() == 1 {
+            println!(
+                "Word found: {}",
+                p.options[0].iter().collect::<String>().green()
+            );
+            break;
+        } else if i == 5 {
+            println!("Last guess: {}", guess.iter().collect::<String>().green());
+        } else {
+            println!("Suggestion: {}\n", guess.iter().collect::<String>().green());
+        }
+
+        if i != 5 {
+            println!("\n");
+            let feedback = get_feedback(guess);
+            print_emoji(&feedback);
+            p.prune(feedback);
+        }
     }
 }
