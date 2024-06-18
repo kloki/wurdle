@@ -19,6 +19,10 @@ name = "wurdle-benchmark"
 path = "src/horror.rs"
 name = "wurdle-horror"
 
+
+[[bin]]
+path = "src/cheater.rs"
+name = "wurdle-cheater"
 [dependencies]
 colored = "2.1.0"
 rand = "0.8.5"
