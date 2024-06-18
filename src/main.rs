@@ -6,7 +6,13 @@ use wurdle::{
 };
 fn main() {
     let data = import_file("./data/words.txt").expect("failed to import words");
-    let gm = GameMaster::new(&data);
+    let args: Vec<String> = std::env::args().collect();
+    let solution: [char; 5] = args[1]
+        .chars()
+        .collect::<Vec<char>>()
+        .try_into()
+        .expect("invalid word");
+    let gm = GameMaster::with_solution(solution);
     let mut p = Player::new(
         data,
         wurdle::player::Strategy::CachedEntropy(['t', 'a', 'r', 'e', 's']),

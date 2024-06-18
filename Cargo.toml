@@ -10,6 +10,7 @@ path = "src/lib.rs"
 path = "src/main.rs"
 name = "wurdle"
 
+
 [[bin]]
 path = "src/benchmark.rs"
 name = "wurdle-benchmark"

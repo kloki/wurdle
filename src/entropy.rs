@@ -36,13 +36,18 @@ impl From<[Feedback; 5]> for FeedbackMask {
     }
 }
 
-pub fn best_guess(options: &Vec<[char; 5]>) -> [char; 5] {
-    let results = find_entropies(options);
+pub fn best_guess(options: &Vec<[char; 5]>, valid: &Vec<[char; 5]>) -> [char; 5] {
+    if options.len() == 1 {
+        return options[0];
+    }
+    let results = find_entropies(options, valid);
     results.last().expect("results should not be empty").0
 }
 
-pub fn find_entropies(options: &Vec<[char; 5]>) -> Vec<([char; 5], f64)> {
-    let mut results: Vec<([char; 5], f64)> = options
+pub fn find_entropies(options: &Vec<[char; 5]>, valid: &Vec<[char; 5]>) -> Vec<([char; 5], f64)> {
+    //Although we consider putting in words we are now ar wrong.
+    //If they have a higher entropy that are worth considering
+    let mut results: Vec<([char; 5], f64)> = valid
         .par_iter()
         .map(|x| (*x, find_entropy(*x, options)))
         .collect();
@@ -74,18 +79,28 @@ mod tests {
 
     #[test]
     fn test_sanity_check_1() {
-        let result = find_entropies(&vec![['a', 'a', 'a', 'a', 'a'], ['a', 'a', 'b', 'a', 'a']]);
+        let result = find_entropies(
+            &vec![['a', 'a', 'a', 'a', 'a'], ['a', 'a', 'b', 'a', 'a']],
+            &vec![['a', 'a', 'a', 'a', 'a'], ['a', 'a', 'b', 'a', 'a']],
+        );
         assert_eq!(result[0].1, 1.0);
         assert_eq!(result[1].1, 1.0);
     }
 
     #[test]
     fn test_sanity_check_2() {
-        let result = find_entropies(&vec![
-            ['a', 'a', 'a', 'a', 'a'],
-            ['a', 'a', 'b', 'a', 'a'],
-            ['z', 'z', 'z', 'z', 'z'],
-        ]);
+        let result = find_entropies(
+            &vec![
+                ['a', 'a', 'a', 'a', 'a'],
+                ['a', 'a', 'b', 'a', 'a'],
+                ['z', 'z', 'z', 'z', 'z'],
+            ],
+            &vec![
+                ['a', 'a', 'a', 'a', 'a'],
+                ['a', 'a', 'b', 'a', 'a'],
+                ['z', 'z', 'z', 'z', 'z'],
+            ],
+        );
         dbg![&result];
         assert!(result[0].1 < result[1].1);
         assert!(result[0].1 < result[2].1);

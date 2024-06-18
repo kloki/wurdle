@@ -20,18 +20,20 @@ pub enum Strategy {
 
 impl Strategy {
     pub fn prepare_entropy(options: &Vec<[char; 5]>) -> Self {
-        Strategy::CachedEntropy(best_guess(options))
+        Strategy::CachedEntropy(best_guess(options, options))
     }
 }
 pub struct Player {
     pub options: Vec<[char; 5]>,
+    pub valid: Vec<[char; 5]>,
     pub strategy: Strategy,
 }
 
 impl Player {
     pub fn new(data_set: Vec<[char; 5]>, strategy: Strategy) -> Self {
         Self {
-            options: data_set,
+            options: data_set.clone(),
+            valid: data_set,
             strategy,
         }
     }
@@ -53,12 +55,12 @@ impl Player {
                     .expect("No possible anwers?")
             }
             Strategy::SplitStrategy => self.split_strategy(),
-            Strategy::Entropy => best_guess(&self.options),
+            Strategy::Entropy => best_guess(&self.options, &self.valid),
             Strategy::CachedEntropy(first_answer) => {
                 if self.options.contains(&first_answer) {
                     first_answer
                 } else {
-                    best_guess(&self.options)
+                    best_guess(&self.options, &self.valid)
                 }
             }
         }

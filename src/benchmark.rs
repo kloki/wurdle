@@ -1,7 +1,7 @@
 use rand::seq::SliceRandom;
 use rayon::prelude::*;
 use wurdle::{importer::import_file, player::Strategy, run};
-const RUNS: usize = 5000;
+const RUNS: usize = 100;
 
 fn print_results(name: &str, results: Vec<usize>) {
     let min = results.iter().min().unwrap();

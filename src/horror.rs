@@ -1,6 +1,6 @@
 use rayon::prelude::*;
 use wurdle::{importer::import_file, player::Strategy, run};
-const RUNS: usize = 250;
+const RUNS: usize = 10;
 
 fn print_results(name: &str, results: Vec<usize>) {
     let min = results.iter().min().unwrap();
